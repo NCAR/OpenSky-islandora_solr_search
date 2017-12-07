@@ -296,6 +296,14 @@ function islandora_solr($query = NULL, $params = NULL) {
   // !!! Set the global variable. !!!
   $_islandora_solr_queryclass = new IslandoraSolrQueryProcessor();
 
+  // OpenSky customization                                                                                      
+  // if no query and no sort, add sort = 'keyDate desc'                                                        
+  // if there is a query, then current_path() is different than ISLANDORA_SOLR_SEARCH_PATH                     
+  if (current_path() == ISLANDORA_SOLR_SEARCH_PATH && !isset($params['sort'])) {
+	$params['sort'] = 'keyDate desc';
+  }
+  // -------- end opensky custom  --------------
+
   // Build and execute Apache Solr query.
   $_islandora_solr_queryclass->buildAndExecuteQuery($query, $params);
 

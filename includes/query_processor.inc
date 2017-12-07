@@ -303,6 +303,43 @@ class IslandoraSolrQueryProcessor {
       }
     }
 
+    /*  OPENSKY -----------------------
+        if there is a collection parameter, add filters to limit search to named
+        collection and it's subcollections if any exist
+	*/
+    if (false && isset($params['collection'])) {
+	  module_load_include('inc', 'opensky', 'includes/utilities');
+	  $collection = $params['collection'];
+
+	  // create $fq_new by removing all RELS_EXT_isMemberOfCollection_uri_ms clauses
+	  $fq_new = array();
+	  $pat = 'RELS_EXT_isMemberOfCollection_uri_ms';
+	  if (isset($this->solrParams['fq'])) {
+		$fq_old = $this->solrParams['fq'];
+		unset($this->solrParams['fq']);
+		foreach ($fq_old as $item) {
+		  if (substr($item, 0, strlen($pat)) !== $pat) {
+			$fq_new[] = $item;
+		  }
+		}
+	  }
+
+	  // construct a filter to search all searchable sub-collections (those
+	  // that have no sub-collections).
+	  $searchable_collections = opensky_get_searchable_subcollections($collection);
+
+	  $children_params = array();
+	  foreach ($searchable_collections as $searchable) {
+		$children_params[] = 'RELS_EXT_isMemberOfCollection_uri_ms:"info:fedora/'.$searchable.'"';
+	  }
+
+	  $searchable_collection_clause = implode(' OR ', $children_params);
+
+	  $this->solrParams['fq'] = array_merge($fq_new, array($searchable_collection_clause));
+	  // dsm($this->solrParams);
+    }
+    // ------ end opensky customization --------------------------
+
     // Invoke a hook for third-party modules to alter the parameters.
     // The hook implementation needs to specify that it takes a reference.
     module_invoke_all('islandora_solr_query', $this);

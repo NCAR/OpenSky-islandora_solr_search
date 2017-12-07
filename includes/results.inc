@@ -483,6 +483,20 @@ class IslandoraSolrResults {
             . '<span class="islandora-solr-breadcrumb-super"> <a' . drupal_attributes($attr_x) . '>(' . t('x') . ')</a></span>';
     }
 
+    /* OPENSKY - Add collection breadcrumb --------------
+       Collection breadcrumb comes at beginning of breadcrums
+       (before search term) since breadcrumb array is reversed are reversed.
+
+       Todo - explore how to use
+          drupal_alter('islandora_breadcrumbs', $breadcrumb, $context);
+       but we need $params and that isn't available to hook_alter
+	*/
+    if (isset($params['collection'])) {
+	  module_load_include('inc', 'opensky', 'includes/utilities');
+	  $breadcrumb[] = opensky_collection_breadcrumb($params);
+    }
+    // -------- end opensky -----------
+
     $breadcrumb[] = l(t('Home'), '<front>', array('attributes' => array('title' => t('Home'))));
     if (!empty($breadcrumb)) {
       $breadcrumb = array_reverse($breadcrumb);
