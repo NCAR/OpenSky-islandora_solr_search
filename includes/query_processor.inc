@@ -439,6 +439,9 @@ class IslandoraSolrQueryProcessor {
             // this methods seems to explicitly avoid doing...
             $object_results[$object_index]['thumbnail_url'] = $object_results[$object_index]['object_url'] . '/datastream/TN/view';
           }
+          elseif (strpos($object_results[$object_index]['content_models'][0], 'citationCModel') !== false) {
+              $object_results[$object_index]['thumbnail_url'] = drupal_get_path('module', 'islandora_scholar') . '/images/BiblioCitOnly.png';
+          }
           else {
             $object_results[$object_index]['thumbnail_url'] = drupal_get_path('module', 'islandora_solr') . '/images/defaultimg.png';
           }
