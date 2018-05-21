@@ -388,14 +388,15 @@ class IslandoraSolrQueryProcessor {
     }
 
     $object_results = array();
-    $solr_results = json_decode($results->getRawResponse(), TRUE);
-    // Invoke a hook for third-party modules to be notified of the result.
-    module_invoke_all('islandora_solr_query_result', $solr_results);
-    // Create results tailored for Islandora's use.
-    $object_results = $solr_results['response']['docs'];
-    $content_model_solr_field = variable_get('islandora_solr_content_model_field', 'RELS_EXT_hasModel_uri_ms');
-    $datastream_field = variable_get('islandora_solr_datastream_id_field', 'fedora_datastreams_ms');
-    $object_label = variable_get('islandora_solr_object_label_field', 'fgs_label_s');
+     if (isset($results)) {
+     $solr_results = json_decode($results->getRawResponse(), TRUE);
+     // Invoke a hook for third-party modules to be notified of the result.
+      module_invoke_all('islandora_solr_query_result', $solr_results);
+      // Create results tailored for Islandora's use.
+      $object_results = $solr_results['response']['docs'];
+      $content_model_solr_field = variable_get('islandora_solr_content_model_field', 'RELS_EXT_hasModel_uri_ms');
+      $datastream_field = variable_get('islandora_solr_datastream_id_field', 'fedora_datastreams_ms');
+      $object_label = variable_get('islandora_solr_object_label_field', 'fgs_label_s');
         
       if (!empty($object_results)) {
         if (isset($this->internalSolrParams['islandora_solr_search_navigation']) && $this->internalSolrParams['islandora_solr_search_navigation']) {
